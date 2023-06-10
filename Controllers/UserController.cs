@@ -12,6 +12,15 @@ public class UserController : ControllerBase
     private static User[] users =
     {
         new User(
+            0,
+            "Cherkasskiy Vitaliy",
+            "4th September",
+            "Moscow",
+            "HSE '25",
+            "https://github.com/vacherkasskiy",
+            "https://res.cloudinary.com/jerrick/image/upload/c_scale,f_jpg,q_auto/jrsbekxaroxa3r7wxvfc.jpg"
+        ),
+        new User(
             1,
             "Elon Musk",
             "30th November",
@@ -123,7 +132,7 @@ public class UserController : ControllerBase
     
     [HttpGet]
     [Route("/users/get_users")]
-    public GetUsersResponse Get([FromQuery]GetUsersRequest request)
+    public GetUsersResponse GetUsers([FromQuery]GetUsersRequest request)
     {
         var response = users
             .Skip(request.Skip)
@@ -131,6 +140,19 @@ public class UserController : ControllerBase
             .ToArray();
 
         return new GetUsersResponse(response, users.Length);
+    }
+
+    [HttpGet]
+    [Route("/users/get_user/{userId}")]
+    public IActionResult GetUser(int userId)
+    {
+        var user = users.FirstOrDefault(x => x.Id == userId);
+        if (user == null)
+        {
+            return StatusCode(StatusCodes.Status400BadRequest);
+        }
+
+        return StatusCode(StatusCodes.Status200OK, user);
     }
 
     [HttpPatch]
