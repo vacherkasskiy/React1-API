@@ -1,4 +1,5 @@
-﻿using Reactjs_api.Models;
+﻿using Reactjs_api.Data.Models;
+using Reactjs_api.Models;
 
 namespace Reactjs_api.Responses;
 
