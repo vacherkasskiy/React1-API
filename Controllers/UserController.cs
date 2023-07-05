@@ -73,7 +73,7 @@ public class UserController : ControllerBase
 
     [HttpPost]
     [Route("/users/set_status")]
-    public async Task<IActionResult> SetStatus(SetStatusRequest request)
+    public async Task<IActionResult> SetStatus([FromQuery]SetStatusRequest request)
     {
         var user = await _repository.GetUser(request.UserId);
         if (user != null)
