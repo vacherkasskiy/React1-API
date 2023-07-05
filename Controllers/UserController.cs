@@ -71,4 +71,18 @@ public class UserController : ControllerBase
         return BadRequest();
     }
 
+    [HttpPost]
+    [Route("/users/set_status")]
+    public async Task<IActionResult> SetStatus(SetStatusRequest request)
+    {
+        var user = await _repository.GetUser(request.UserId);
+        if (user != null)
+        {
+            user.Status = request.Status;
+            await _repository.EditUser(user);
+            return Ok();
+        }
+
+        return BadRequest();
+    }
 }

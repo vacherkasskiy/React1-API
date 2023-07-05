@@ -11,6 +11,7 @@ public class User
     public string? City { get; set; }
     public string? Education { get; set; }
     public string? Website { get; set; }
+    public string? Status { get; set; }
     [Required]
     public string Image { get; set; }
     [Required]
