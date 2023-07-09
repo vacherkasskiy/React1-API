@@ -25,7 +25,14 @@ public class UserRepository : IUserRepository
         return _db.Users
             .Skip(skip)
             .Take(amount)
+            .OrderBy(x => x.Id)
             .ToArray();
+    }
+
+    public async Task AddUser(User user)
+    {
+        await _db.Users.AddAsync(user);
+        await _db.SaveChangesAsync();
     }
 
     public async Task EditUser(User newUser)

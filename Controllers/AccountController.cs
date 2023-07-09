@@ -1,8 +1,7 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Mvc;
-using Reactjs_api.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using Reactjs_api.Data.Models;
+using Reactjs_api.Repositories.Interfaces;
+using Reactjs_api.Requests;
 
 namespace Reactjs_api.Controllers;
 
@@ -10,48 +9,31 @@ namespace Reactjs_api.Controllers;
 [Route("[controller]")]
 public class AccountController : ControllerBase
 {
-    private static LoginUser[] users =
+    private readonly IUserRepository _repository;
+    public AccountController(IUserRepository repository)
     {
-        new LoginUser("vacherkasskiy", "123456"),
-        new LoginUser("spacex", "abcdef"),
-        new LoginUser("amazon", "bezos"),
-    };
-
+        _repository = repository;
+    }
+    
     [HttpPost]
-    [Route("/auth/login")]
-    public async Task<IActionResult> Login([FromQuery]LoginUser request)
+    [Route("/auth/register")]
+    public async Task<IActionResult> GetValues(RegisterRequest request)
     {
-        var user = users
-            .FirstOrDefault(x => 
-                x.Login == request.Login &&
-                x.Password == request.Password);
-
-        if (user == null)
+        if (_repository
+                .GetUsers(0, _repository.Length)
+                .Any(x => x.Email == request.Email))
         {
-            return StatusCode(StatusCodes.Status400BadRequest, "Wrong login or password");
+            return BadRequest("Wrong email");
         }
         
-        var claims = new[]
+        var user = new User
         {
-            new Claim(ClaimTypes.Name, user.Login),
+            Name = request.Name,
+            Email = request.Email,
+            Password = request.Password,
         };
-
-        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        var principal = new ClaimsPrincipal(identity);
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
-        return StatusCode(StatusCodes.Status200OK, "Success");
-    }
-
-    [HttpGet]
-    [Route("/auth/get")]
-    public IActionResult GetUser()
-    {
-        if (!User.Identity.IsAuthenticated)
-        {
-            return StatusCode(StatusCodes.Status401Unauthorized, "User is not authenticated");
-        }
-
-        return StatusCode(StatusCodes.Status200OK, User.Identity!.Name);
+        await _repository.AddUser(user);
+        
+        return Ok(request);
     }
 }
