@@ -23,7 +23,7 @@ public class AccountController : ControllerBase
                 .GetUsers(0, _repository.Length)
                 .Any(x => x.Email == request.Email))
         {
-            return BadRequest("Wrong email");
+            return BadRequest("User with this email already exists");
         }
         
         var user = new User

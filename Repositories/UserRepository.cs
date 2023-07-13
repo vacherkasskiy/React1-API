@@ -23,9 +23,9 @@ public class UserRepository : IUserRepository
     public User[] GetUsers(int skip, int amount)
     {
         return _db.Users
+            .OrderBy(x => x.Id)
             .Skip(skip)
             .Take(amount)
-            .OrderBy(x => x.Id)
             .ToArray();
     }
 
